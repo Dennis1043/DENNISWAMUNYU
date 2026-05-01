@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>⚡ CYBERPHAGE ⚡ ROOT ACCESS</title>
+<style>
+* {
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    background: radial-gradient(circle at center, #0a0f0a 0%, #000000 100%);
+    color: #00ffcc;
+    font-family: 'Courier New', 'Fira Code', monospace;
+    overflow: hidden;
+    cursor: crosshair;
+    transition: filter 0.05s linear;
+}
+
+/* SCREEN SHAKE ANIMATION */
+.screen-shake {
+    animation: shakeGlitch 0.12s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shakeGlitch {
+    0% { transform: translate(0, 0) skew(0deg); filter: blur(0px);}
+    20% { transform: translate(-3px, 2px) skew(1deg); filter: blur(1px);}
+    40% { transform: translate(3px, -1px) skew(-1deg);}
+    60% { transform: translate(-2px, 3px) skew(0.5deg);}
+    80% { transform: translate(2px, -2px) skew(-0.5deg);}
+    100% { transform: translate(0, 0) skew(0); filter: blur(0px);}
+}
+
+/* TERMINAL */
+#screen {
+    padding: 24px 28px;
+    white-space: pre-wrap;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-shadow: 0 0 3px #00ffcc;
+    position: relative;
+    z-index: 5;
+    height: 100vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+#screen::-webkit-scrollbar { width: 5px; }
+#screen::-webkit-scrollbar-track { background: #001a0f; }
+#screen::-webkit-scrollbar-thumb { background: #00ffcc; border-radius: 5px; }
+
+/* PROGRESS BAR (DECRYPTION) */
+#decryptContainer {
+    position: fixed;
+    bottom: 30px;
+    left: 10%;
+    width: 80%;
+    z-index: 50;
+    background: #001a0faa;
+    backdrop-filter: blur(8px);
+    border: 1px solid #00ffcc;
+    border-radius: 30px;
+    padding: 6px 12px;
+    font-family: monospace;
+    transition: all 0.2s;
+}
+#decryptBar {
+    width: 0%;
+    height: 12px;
+    background: linear-gradient(90deg, #00ffcc, #ff44aa);
+    border-radius: 20px;
+    transition: width 0.08s linear;
+    box-shadow: 0 0 12px #00ffcc;
+}
+#decryptText {
+    font-size: 11px;
+    margin-top: 6px;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+/* ALERT FLASH */
+@keyframes alertFlash {
+    0% { background: #000; text-shadow: 0 0 0 #ff3300; }
+    50% { background: #2a0404; text-shadow: 0 0 8px #ff2200; }
+    100% { background: #000; text-shadow: 0 0 0 #00ffcc; }
+}
+.alert { animation: alertFlash 0.18s infinite; }
+
+/* FACE SCAN */
+#scan {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 280px;
+    height: 340px;
+    transform: translate(-50%, -50%);
+    border: 3px solid #00ffcc;
+    box-shadow: 0 0 25px rgba(0,255,204,0.6);
+    display: none;
+    overflow: hidden;
+    background: rgba(0,20,10,0.8);
+    backdrop-filter: blur(3px);
+    z-index: 200;
+    border-radius: 12px;
+}
+.scanline {
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #00ffcc, #ff44aa, #00ffcc, transparent);
+    animation: scanmove 1.2s cubic-bezier(0.7, 0, 0.3, 1) infinite;
+}
+@keyframes scanmove {
+    0% { top: 0%; opacity: 1; }
+    100% { top: 100%; opacity: 0.8; }
+}
+
+/* BIRTHDAY HUD */
+#birthday {
+    display: none;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 680px;
+    background: rgba(0, 0, 0, 0.92);
+    border: 2px solid #00ffcc;
+    border-radius: 28px;
+    padding: 2rem;
+    backdrop-filter: blur(16px);
+    z-index: 100;
+    box-shadow: 0 0 55px rgba(0,255,204,0.4);
+    animation: fadeGlow 0.9s ease;
+}
+@keyframes fadeGlow {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); filter: blur(8px);}
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0);}
+}
+h1 { font-size: 2.2rem; text-shadow: 0 0 12px #00ffcc; margin-bottom: 1rem; }
+button {
+    background: transparent;
+    border: 2px solid #00ffcc;
+    color: #00ffcc;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 8px 20px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 40px;
+    transition: 0.2s;
+}
+button:hover { background: #00ffcc22; box-shadow: 0 0 15px #00ffcc; }
+#msg {
+    margin-top: 18px;
+    background: #001a12;
+    padding: 10px;
+    border-left: 4px solid #ff44aa;
+}
+
+/* OSCILLOSCOPE */
+#oscilloscope {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(0,0,0,0.7);
+    z-index: 45;
+    pointer-events: none;
+    border-top: 1px solid #00ffcc88;
+}
+canvas { position: fixed; top: 0; left: 0; pointer-events: none; }
+#matrix { z-index: 0; }
+#fireworks { z-index: 2; }
+.audio-cloak { display: none !important; }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<canvas id="fireworks"></canvas>
+<canvas id="oscilloscope"></canvas>
+
+<div id="screen"></div>
+<div id="scan"><div class="scanline"></div></div>
+
+<!-- Decryption visual bar -->
+<div id="decryptContainer" style="display:none;">
+    <div id="decryptBar"></div>
+    <div id="decryptText">[ DECRYPTING PROTOCOL ] 0%</div>
+</div>
+
+<div id="birthday">
+    <h1 id="title"></h1>
+    <p style="font-size:1.2rem;">🔓 ROOT PERMANENT // MISSION COMPLETE 🎂</p>
+    <button id="hiddenFileBtn">📁 DECRYPT HIDDEN FILE</button>
+    <button onclick="showSecretMessage()">📡 REVEAL MESSAGE</button>
+    <div id="msg" style="display:none;">💀 "You are still in the system... and still legendary 🕶️🔥"<br>════════════════════</div>
+    <div id="hiddenMsg" style="display:none; margin-top:15px; color:#ffaa44;">🎖️ ACCESS LEVEL: GOD // You cracked the root cipher. Welcome to the inner circle.</div>
+</div>
+
+<!-- AUDIO LAYER (ALL HIDDEN) -->
+<audio id="hackingAmbient" loop><source src="https://assets.mixkit.co/sfx/preview/mixkit-digital-dystopian-ambience-300.mp3"></audio>
+<audio id="glitchDrone" loop><source src="https://assets.mixkit.co/sfx/preview/mixkit-static-buzz-glitch-600.mp3"></audio>
+<audio id="keystrokeSound"><source src="https://www.soundjay.com/misc/sounds/computer-keyboard-typing-02.mp3"></audio>
+<audio id="alarmBleep"><source src="https://www.soundjay.com/misc/sounds/tech-alarm-beep-01.mp3"></audio>
+<audio id="radarSweep"><source src="https://www.soundjay.com/misc/sounds/radar-sweep-03.mp3"></audio>
+<audio id="breachAlert"><source src="https://www.soundjay.com/misc/sounds/computer-error-01.mp3"></audio>
+<audio id="dataRush"><source src="https://www.soundjay.com/misc/sounds/computer-data-transfer-01.mp3"></audio>
+<audio id="celebratoryMusic" loop><source src="https://www2.cs.uic.edu/~i101/SoundFiles/HappyBirthday.mid"></audio>
+<audio id="typewriterGlitch"><source src="https://www.soundjay.com/misc/sounds/typewriter-key-1.mp3"></audio>
+<audio id="fanNoise" loop><source src="https://www.soundjay.com/misc/sounds/fan-noise-01.mp3"></audio>
+<audio id="dataZap"><source src="https://www.soundjay.com/misc/sounds/electric-zap-02.mp3"></audio>
+
+<script>
+// ========== GLOBAL AUDIO & FX ENGINE ==========
+const audio = {
+    ambient: document.getElementById('hackingAmbient'),
+    glitchDrone: document.getElementById('glitchDrone'),
+    keyClick: document.getElementById('keystrokeSound'),
+    alarm: document.getElementById('alarmBleep'),
+    radar: document.getElementById('radarSweep'),
+    breach: document.getElementById('breachAlert'),
+    dataTransfer: document.getElementById('dataRush'),
+    birthdayMusic: document.getElementById('celebratoryMusic'),
+    typeTick: document.getElementById('typewriterGlitch'),
+    fan: document.getElementById('fanNoise'),
+    zap: document.getElementById('dataZap')
+};
+for(let k in audio) if(audio[k]) { audio[k].volume = 0; audio[k].volume = k==='ambient'?0.32: k==='glitchDrone'?0: k==='birthdayMusic'?0.5: k==='fan'?0.2:0.4; }
+
+let audioUnlocked = false;
+function unlockAllAudio() {
+    if(audioUnlocked) return;
+    for(let k in audio) if(audio[k] && audio[k].play) audio[k].play().catch(()=>{}).then(()=>{ audio[k].pause(); audio[k].currentTime=0; });
+    audioUnlocked=true;
+    if(audio.ambient) audio.ambient.play().catch(()=>{});
+    if(audio.fan) { audio.fan.volume=0.12; audio.fan.play().catch(()=>{}); }
+    document.removeEventListener("click", unlockAllAudio);
+    document.removeEventListener("touchstart", unlockAllAudio);
+    document.removeEventListener("keydown", unlockAllAudio);
+}
+document.addEventListener("click", unlockAllAudio);
+document.addEventListener("touchstart", unlockAllAudio);
+document.addEventListener("keydown", unlockAllAudio);
+
+function playSFX(snd, forceRestart=true, vol=null) {
+    if(!audioUnlocked || !snd) return;
+    if(forceRestart) snd.currentTime=0;
+    if(vol!==null) snd.volume=vol;
+    snd.play().catch(e=>{});
+}
+function triggerGlitch(intensity=0.55) {
+    if(!audioUnlocked) return;
+    let g = audio.glitchDrone.cloneNode();
+    g.volume=intensity;
+    g.play().catch(()=>{});
+    setTimeout(()=>{ g.pause(); g.remove(); }, 400);
+}
+function screenShake() { document.body.classList.add('screen-shake'); setTimeout(()=> document.body.classList.remove('screen-shake'), 150); }
+
+// OSCILLOSCOPE (audio visualizer)
+let audioCtx, source, analyser, dataArray, oscCanvas, oscCtx;
+function initOscilloscope() {
+    oscCanvas = document.getElementById('oscilloscope');
+    oscCtx = oscCanvas.getContext('2d');
+    oscCanvas.width = window.innerWidth;
+    oscCanvas.height = 60;
+    if(!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.4;
+        masterGain.connect(audioCtx.destination);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 128;
+        let bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+        const media = document.createElement('audio');
+        // dummy: we connect to ambient track for visualization
+        if(audio.ambient && audio.ambient.src) {
+            try {
+                source = audioCtx.createMediaElementSource(audio.ambient);
+                source.connect(analyser);
+                analyser.connect(masterGain);
+            } catch(e) {}
+        }
+    }
+    function drawWave() {
+        if(!oscCtx) return;
+        oscCtx.fillStyle = "rgba(0,0,0,0.7)";
+        oscCtx.fillRect(0,0, oscCanvas.width, oscCanvas.height);
+        if(analyser && dataArray) {
+            analyser.getByteTimeDomainData(dataArray);
+            oscCtx.beginPath();
+            oscCtx.strokeStyle = "#00ffcc";
+            oscCtx.lineWidth = 2;
+            let sliceWidth = oscCanvas.width / dataArray.length;
+            let x=0;
+            for(let i=0; i<dataArray.length; i++) {
+                let v = dataArray[i]/128 -1;
+                let y = v * (oscCanvas.height/2) + oscCanvas.height/2;
+                if(i===0) oscCtx.moveTo(x,y);
+                else oscCtx.lineTo(x,y);
+                x += sliceWidth;
+            }
+            oscCtx.stroke();
+        }
+        requestAnimationFrame(drawWave);
+    }
+    drawWave();
+}
+setTimeout(()=>{ if(audioUnlocked) initOscilloscope(); else document.addEventListener("click", ()=> initOscilloscope(), {once:true}); }, 500);
+
+// ========== KONAMI CODE EASTER EGG ==========
+let konamiIndex = 0;
+const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'];
+document.addEventListener('keydown', (e) => {
+    if(e.code === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        if(konamiIndex === konamiCode.length) {
+            konamiIndex=0;
+            document.body.style.background = "radial-gradient(circle, #3a0a0a, #000)";
+            let matrixCanvas = document.getElementById('matrix');
+            matrixCanvas.style.filter = "hue-rotate(40deg) brightness(1.3)";
+            playSFX(audio.zap, true, 0.7);
+            triggerGlitch(0.9);
+            screenShake();
+            const msgDiv = document.createElement('div');
+            msgDiv.innerText = "⚡ KONAMI OVERRIDE: ROOT ACCESS ESCALATED ⚡";
+            msgDiv.style.position="fixed"; msgDiv.style.bottom="20%"; msgDiv.style.left="20%"; msgDiv.style.background="#ff00aa"; msgDiv.style.padding="10px"; msgDiv.style.zIndex="9999"; msgDiv.style.color="white";
+            document.body.appendChild(msgDiv);
+            setTimeout(()=>msgDiv.remove(), 3000);
+        }
+    } else { konamiIndex = 0; }
+});
+
+// ========== UI ELEMENTS ==========
+const screenDiv = document.getElementById("screen");
+const scanOverlay = document.getElementById("scan");
+const birthdayPanel = document.getElementById("birthday");
+const decryptContainer = document.getElementById("decryptContainer");
+const decryptBar = document.getElementById("decryptBar");
+const decryptTextSpan = document.getElementById("decryptText");
+const agentName = "DETECTIVE DENNIS";
+
+// ========== INTRO + DOXXING ==========
+const introLines = [
+    "> ROOTKIT DEPLOYED...",
+    "> DECRYPTING KERNEL SPACE...",
+    "> BYPASSING NEXT-GEN FIREWALLS [■■■■□□□□□□] 38%",
+    "> INJECTING SHELLCODE v9.2",
+    "> SPOOFING HARDWARE IDS: 0x7F2A:88EC",
+    "",
+    "[!] ALERT: INTRUSION DETECTED BY SENTINEL AI [!]",
+    "> ACTIVATING SURVEILLANCE FEED...",
+    "> INITIATING FACIAL BIOMETRIC SCAN"
+];
+let lineIdx=0, introActive=true;
+function addLine(text, withFX=true) {
+    screenDiv.innerHTML += text + "\n";
+    if(withFX && audioUnlocked) {
+        playSFX(audio.keyClick, true, 0.2);
+        if(text.includes("ALERT")) { playSFX(audio.alarm, true); triggerGlitch(0.45); screenShake(); }
+        if(text.includes("BIOMETRIC")) { playSFX(audio.radar, true); screenShake(); }
+    }
+    screenDiv.scrollTop = screenDiv.scrollHeight;
+}
+function runIntro() {
+    if(!introActive) return;
+    if(lineIdx < introLines.length) {
+        let line = introLines[lineIdx];
+        addLine(line, true);
+        if(line.includes("FACIAL BIOMETRIC")) {
+            document.body.classList.add("alert");
+            scanOverlay.style.display = "block";
+            if(audio.glitchDrone) { audio.glitchDrone.volume=0.5; audio.glitchDrone.play().catch(()=>{}); }
+            playSFX(audio.radar, true);
+        }
+        lineIdx++;
+        setTimeout(runIntro, 270);
+    } else {
+        startBinaryStormAndDecrypt();
+    }
+}
+
+// ========== BINARY STORM + DECRYPTION PROGRESS BAR ==========
+let stormInterval;
+function startBinaryStormAndDecrypt() {
+    introActive = false;
+    decryptContainer.style.display = "block";
+    let progress = 0;
+    let stormCount=0;
+    const speedUpInterval = setInterval(()=>{
+        if(progress<100) {
+            progress += Math.floor(Math.random()*5)+2;
+            if(progress>100) progress=100;
+            decryptBar.style.width = progress+"%";
+            decryptTextSpan.innerText = `[ HEX DECRYPTION ] ${progress}%`;
+            if(audio.dataTransfer) { audio.dataTransfer.volume = 0.25 + (progress/200); playSFX(audio.dataTransfer, false, 0.3); }
+            if(progress % 20 === 0) screenShake();
+        }
+    }, 150);
+    stormInterval = setInterval(() => {
+        let row="";
+        for(let i=0;i<88;i++) row += Math.random()>0.5?"1":"0";
+        screenDiv.innerHTML += row + "\n";
+        if(audioUnlocked && Math.random()>0.7) playSFX(audio.typeTick, false, 0.08);
+        stormCount++;
+        if(stormCount >= 55) {
+            clearInterval(stormInterval);
+            clearInterval(speedUpInterval);
+            decryptContainer.style.display = "none";
+            executeSystemBreach();
+        }
+    }, 38);
+}
+
+// ========== BREACH + FAKE DOXXING ==========
+function executeSystemBreach() {
+    playSFX(audio.breach, true, 0.8);
+    triggerGlitch(0.9);
+    screenShake();
+    addLine("\n⚠️⚠️⚠️ CRITICAL BREACH ⚠️⚠️⚠️", true);
+    setTimeout(()=>{ addLine("> SCRAPING BIOMETRIC DATABASE...", true); playSFX(audio.dataTransfer, true); }, 400);
+    setTimeout(()=>{ addLine(">> TARGET IDENTIFIED: "+agentName, true); playSFX(audio.zap, true); }, 900);
+    setTimeout(()=>{ 
+        addLine("> IP ADDRESS: 192.168.87.244 (TOR EXIT NODE)", true);
+        addLine("> GEOLOCATION: LOCKED ON [REDACTED] // SECTOR 7", true);
+        addLine("> DEVICE: HACKER TERMINAL [OMEGA v4.0]", true);
+        addLine("> ALIAS GENERATED: NEO_VIPER", true);
+        playSFX(audio.dataTransfer, true);
+    }, 1300);
+    setTimeout(()=>{ addLine(">>> ✅ VERIFICATION LOCK CLEARED ✅ <<<", true); screenShake(); }, 2100);
+    setTimeout(()=>{
+        scanOverlay.style.display = "none";
+        document.body.classList.remove("alert");
+        if(audio.glitchDrone) { audio.glitchDrone.pause(); audio.glitchDrone.currentTime=0; }
+        if(audio.fan) { audio.fan.volume = 0.05; }
+        screenDiv.innerHTML = "⚡ OVERRIDE SUCCESSFUL. WELCOME, OPERATIVE.\n> SYSTEM INTEGRITY: 100%\n\n";
+        setTimeout(()=> showBirthdayPhase(), 1100);
+    }, 2800);
+}
+
+// ========== BIRTHDAY + AUTO MUSIC + HIDDEN FILE DECRYPT ==========
+function showBirthdayPhase() {
+    if(audio.ambient) audio.ambient.pause();
+    if(audio.glitchDrone) audio.glitchDrone.pause();
+    screenDiv.style.display = "none";
+    birthdayPanel.style.display = "block";
+    const titleSpan = document.getElementById("title");
+    const greeting = "🎉 HAPPY BIRTHDAY " + agentName + " 🎉";
+    let idx=0;
+    function typeGreeting() {
+        if(idx < greeting.length) {
+            titleSpan.innerHTML += greeting[idx];
+            if(audio.typeTick) { let t=audio.typeTick.cloneNode(); t.volume=0.12; t.play().catch(()=>{}); setTimeout(()=>t.remove(),50); }
+            idx++;
+            setTimeout(typeGreeting, 55);
+        } else {
+            if(audio.birthdayMusic) audio.birthdayMusic.play().catch(()=>{});
+            playSFX(audio.dataTransfer, false, 0.3);
+            speakMissionComplete();
+            startIntenseFireworks();
+        }
+    }
+    typeGreeting();
+    // hidden file button logic
+    document.getElementById("hiddenFileBtn").onclick = () => {
+        let hiddenMsgDiv = document.getElementById("hiddenMsg");
+        if(hiddenMsgDiv.style.display === "none") {
+            hiddenMsgDiv.style.display = "block";
+            playSFX(audio.zap, true, 0.7);
+            triggerGlitch(0.6);
+            screenShake();
+            let bruteForceInterval = setInterval(()=>{ addTempEffect("BRUTE FORCING ENCRYPTION..."); }, 300);
+            setTimeout(()=>{ clearInterval(bruteForceInterval); addTempEffect("✔ DECRYPTION SUCCESSFUL"); }, 1500);
+            function addTempEffect(txt) {
+                let div=document.createElement("div");
+                div.innerText=txt; div.style.color="#ffaa44"; div.style.fontSize="12px";
+                document.getElementById("hiddenMsg").appendChild(div);
+                setTimeout(()=>div.remove(), 800);
+            }
+        } else {
+            hiddenMsgDiv.style.display = "none";
+        }
+    };
+}
+
+function speakMissionComplete() {
+    let msg = new SpeechSynthesisUtterance("Mission complete. Access granted. Happy birthday " + agentName + ". You are a legend in the mainframe.");
+    msg.rate=0.88; msg.pitch=1.1;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+function showSecretMessage() {
+    let m=document.getElementById("msg");
+    if(m.style.display==="none") { m.style.display="block"; playSFX(audio.dataTransfer, true, 0.5); triggerGlitch(0.3); }
+    else m.style.display="none";
+}
+
+// ========== MATRIX RAIN ==========
+function initMatrixRain() {
+    const ctx = document.getElementById("matrix").getContext("2d");
+    let width=window.innerWidth, height=window.innerHeight;
+    let canvas = document.getElementById("matrix");
+    canvas.width=width; canvas.height=height;
+    const chars = "01アイウエオカキクケコサシスセソ";
+    const fontSize=15;
+    const cols=Math.ceil(width/fontSize);
+    let drops=new Array(cols).fill(1);
+    function draw() {
+        ctx.fillStyle="rgba(0,0,0,0.07)";
+        ctx.fillRect(0,0,width,height);
+        ctx.fillStyle="#0fefc0";
+        ctx.font=`bold ${fontSize}px monospace`;
+        for(let i=0;i<drops.length;i++) {
+            let text=chars[Math.floor(Math.random()*chars.length)];
+            ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+            if(drops[i]*fontSize>height && Math.random()>0.975) drops[i]=0;
+            drops[i]++;
+        }
+        requestAnimationFrame(draw);
+    }
+    draw();
+}
+// FIREWORKS =======
+let particles=[];
+function initFireworks() {
+    const fcanvas=document.getElementById("fireworks"), fctx=fcanvas.getContext("2d");
+    fcanvas.width=window.innerWidth; fcanvas.height=window.innerHeight;
+    function createFirework() {
+        if(birthdayPanel.style.display!=="block") return;
+        let x=Math.random()*fcanvas.width, y=Math.random()*fcanvas.height*0.6+40;
+        let hue=Math.random()*360;
+        for(let i=0;i<55;i++) {
+            particles.push({ x,y, vx:(Math.random()-0.5)*8, vy:(Math.random()-0.5)*7-1.5, life:100, color:`hsl(${hue+Math.random()*40},100%,65%)`, size:Math.random()*3+1.5 });
+        }
+        if(audioUnlocked) { let pop=audio.keyClick.cloneNode(); pop.volume=0.08; pop.play().catch(()=>{}); setTimeout(()=>pop.remove(),150); }
+    }
+    function animateFire() {
+        fctx.fillStyle="rgba(0,0,0,0.2)";
+        fctx.fillRect(0,0,fcanvas.width,fcanvas.height);
+        particles=particles.filter(p=>{
+            p.x+=p.vx; p.y+=p.vy; p.life-=1.8;
+            fctx.fillStyle=p.color; fctx.fillRect(p.x,p.y,p.size,p.size);
+            return p.life>0;
+        });
+        requestAnimationFrame(animateFire);
+    }
+    setInterval(createFirework, 650);
+    animateFire();
+}
+function startIntenseFireworks() {
+    setInterval(()=>{ if(birthdayPanel.style.display==="block" && audioUnlocked && Math.random()>0.75){ let faint=audio.glitchDrone.cloneNode(); faint.volume=0.07; faint.play().catch(()=>{}); setTimeout(()=>faint.remove(),200); } },1100);
+}
+// RESIZE HANDLER
+window.addEventListener('resize',()=>{
+    let m=document.getElementById("matrix"), f=document.getElementById("fireworks"), o=document.getElementById("oscilloscope");
+    if(m){ m.width=window.innerWidth; m.height=window.innerHeight; }
+    if(f){ f.width=window.innerWidth; f.height=window.innerHeight; }
+    if(o){ o.width=window.innerWidth; }
+});
+// LAUNCH
+setTimeout(()=>{ if(audioUnlocked && audio.ambient) audio.ambient.play().catch(()=>{}); }, 300);
+initMatrixRain();
+initFireworks();
+runIntro();
+// fan noise low-level
+setInterval(()=>{ if(audioUnlocked && audio.fan && birthdayPanel.style.display!=="block") audio.fan.volume = Math.min(0.25, audio.fan.volume+0.002); }, 3000);
+</script>
+</body>
+</html>
